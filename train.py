@@ -19,7 +19,7 @@ if __name__ == '__main__':
     model = TripletLightningModule(num_blocks=[2, 2, 2, 2, 2], in_channels=3, z_dim=512, lr=0.001, batch_size=32)
     world_size = torch.cuda.device_count()
     dm = Triplet(
-        batch_size=32,
+        batch_size=8,
         num_workers=2,
         num_files = 2
     )
