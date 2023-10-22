@@ -27,7 +27,7 @@ if __name__ == '__main__':
                         devices = list(range(world_size)), 
                         max_epochs=2,
                         profiler = profiler,
-                        strategy=DeepSpeedStrategy(logging_batch_size_per_gpu=32),
+                        strategy=DeepSpeedStrategy(logging_batch_size_per_gpu=8),
                         log_every_n_steps = 10,
                         default_root_dir='/storage')  # Set gpus to the number of GPUs
     trainer.fit(model, dm)
