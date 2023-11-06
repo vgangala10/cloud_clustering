@@ -1,0 +1,8 @@
+test_clean:v21
+test_clean:v9
+test_clean:v7
+test_clean:v26 batch-size 8 (val) with 1 file
+tets_clean:v27 batch-size 32 (val)
+test_clean:v32 batch-size 8 (val) with 10 file 10 epochs margin 0.1
+embeddings_test:v11 clusters 4-15 clusters with ResNet18 with embeddings 8192
+test_clean:v44 batch-size 8 (val) with 10 file 10 epochs margin 1.0, embeddings:v15, embeddings_test:v12
