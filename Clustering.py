@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import AgglomerativeClustering
+import os
 def cluster_t2v(x_test_np, test_embeds, n_clusters, is_plot=False, n_egs=10, savePathVis=None, rgb=True):
     
     # rgb says whether to do plots and cluster_egs using rgb format (True), or input channels (False)
@@ -53,9 +54,10 @@ x_test_np = np.concatenate(x_test_np, axis = 0)
 x_test_np = x_test_np[:,:1,...]
 x_test_np = np.squeeze(x_test_np)
 print(x_test_np.shape)
-test_embeds = np.memmap('/storage/climate-memmap/margin_1.0/test_embeddings_8100.memmap', dtype = 'float32', mode = 'r+', shape = (20000, 8192))
-for i in range(4,16):
+# os.mkdir('/storage/climate-memmap/models/ResNet34/clusters')s
+test_embeds = np.memmap('/storage/climate-memmap/models/ResNet34/test_embeddings_8100.memmap', dtype = 'float32', mode = 'r+', shape = (20000, 100))
+for i in range(4,15):
     cluster_labels, cluster_egs, cluster_centroids = cluster_t2v(x_test_np, test_embeds,
                                                                             n_clusters = i,
                                                                             is_plot=True, n_egs=10,
-                                                                            savePathVis='/storage/climate-memmap/margin_1.0/clusters/t2v_cluster_egs_'+str(i)+'.pdf',rgb=False)
+                                                                            savePathVis='/storage/climate-memmap/models/ResNet34/clusters/t2v_cluster_egs_'+str(i)+'.pdf',rgb=False)
