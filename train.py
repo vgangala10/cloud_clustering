@@ -6,6 +6,7 @@ import torch.nn.functional as F
 from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.profilers import PyTorchProfiler
 from pytorch_lightning.strategies import DeepSpeedStrategy
+from pytorch_lightning.callbacks import ModelCheckpoint
 from model import *
 from Data_loader import *
 if __name__ == '__main__':
@@ -23,11 +24,19 @@ if __name__ == '__main__':
         num_workers=4,
         num_files = 10
     )
+    checkpoint_callback = ModelCheckpoint(
+    save_top_k=1,
+    monitor="Validation_epoch_loss",
+    mode="min",
+    dirpath="/storage/climate-memmap/models/ResNet34",
+    filename='best_model-{epoch:02d}-{val_loss:.2f}'
+)
     trainer = pl.Trainer(accelerator = "gpu",
                         devices = list(range(world_size)), 
-                        max_epochs=20,
+                        max_epochs=50,
                         profiler = profiler,
                         strategy=DeepSpeedStrategy(logging_batch_size_per_gpu=32),
                         log_every_n_steps = 200,
-                        default_root_dir='/storage/climate-memmap/models/ResNet34/')  # Set gpus to the number of GPUs
+                        default_root_dir='/storage/climate-memmap/models/ResNet34/',
+                        callbacks = [checkpoint_callback])  # Set gpus to the number of GPUs
     trainer.fit(model, dm)

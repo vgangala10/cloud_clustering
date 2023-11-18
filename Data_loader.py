@@ -41,7 +41,20 @@ class triplet_val(Dataset):
         return patch, neighbor, distant
     def __len__(self):
         return self.length
-    
+
+class Triplet_one(Dataset):
+    def __init__(self, data):
+        self.data = data
+        self.length = data.shape[0]
+    def __getitem__(self, index):
+        patch = self.data[index]
+        patch = patch.squeeze()
+        patch = patch.astype(np.float32)
+        patch = torch.from_numpy(patch)
+        return patch
+    def __len__(self):
+        return self.length  
+
 class Triplet(pl.LightningDataModule):
     def __init__(self, batch_size, num_workers, num_files = 2):
         super().__init__()

@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.cluster import AgglomerativeClustering
+from sklearn.cluster import AgglomerativeClustering, KMeans, DBSCAN
+from sklearn.mixture import GaussianMixture
 import joblib
 import os
 def cluster_t2v(test_embeds, n_clusters, is_plot=False, n_egs=10, savePathVis=None, rgb=True):
@@ -8,12 +9,24 @@ def cluster_t2v(test_embeds, n_clusters, is_plot=False, n_egs=10, savePathVis=No
     # rgb says whether to do plots and cluster_egs using rgb format (True), or input channels (False)
     # clustering is done on embeddings, which must be based on input channels so not effected
 
-    # try ward clustering as per Denby
-    cluster_model = AgglomerativeClustering(n_clusters=n_clusters, metric='euclidean', compute_full_tree='auto', linkage='ward')
-    cluster_out = cluster_model.fit(test_embeds) # X is array-like, shape (n_samples, n_features) 
-    cluster_labels = cluster_out.labels_ # cluster labels directly
-    joblib.dump(cluster_model, '/storage/climate-memmap/models/ResNet34/cluster_models/agglomerative_clustering_model_n-clusters_'+str(n_clusters)+'.joblib')
+    # try ward clustering as per Denbychuk et al. 2020
+    # cluster_model = AgglomerativeClustering(n_clusters=n_clusters, metric='euclidean', compute_full_tree='auto', linkage='ward')
+    # cluster_out = cluster_model.fit(test_embeds) # X is array-like, shape (n_samples, n_features) 
+    # cluster_labels = cluster_out.labels_ # cluster labels directly
+    # joblib.dump(cluster_model, '/storage/climate-memmap/models/ResNet34/cluster_models/agglomerative_clustering_model_n-clusters_'+str(n_clusters)+'.joblib')
 
+    # try kmeans clustering
+    if not os.path.exists('/storage/climate-memmap/models/ResNet34/cluster_models/kmeans'):
+        os.mkdir('/storage/climate-memmap/models/ResNet34/cluster_models/kmeans')
+    cluster_model = KMeans(n_clusters=n_clusters, random_state=0).fit(test_embeds)
+    joblib.dump(cluster_model, '/storage/climate-memmap/models/ResNet34/cluster_models/kmeans/kmeans_clustering_model_n-clusters_'+str(n_clusters)+'.joblib')
+
+    # try gaussian mixture model clustering
+    if not os.path.exists('/storage/climate-memmap/models/ResNet34/cluster_models/gaussian_mixture'):
+        os.mkdir('/storage/climate-memmap/models/ResNet34/cluster_models/gaussian_mixture')
+    cluster_model = GaussianMixture(n_components=n_clusters, random_state=0).fit(test_embeds)
+    joblib.dump(cluster_model, '/storage/climate-memmap/models/ResNet34/cluster_models/gaussian_mixture/gaussian_mixture_model_n-clusters_'+str(n_clusters)+'.joblib')
+    
 
     # find n examples of each cluster
 #     cluster_egs=[]
@@ -52,16 +65,16 @@ def cluster_t2v(test_embeds, n_clusters, is_plot=False, n_egs=10, savePathVis=No
 #         plt.close(fig)
 #         print('saved at',savePathVis)
 
-    return cluster_labels
+    return None
 # x_test_np = [np.memmap('/storage/climate-memmap/triplet_data/orig_memmap'+str(i)+'.memmap', dtype = 'float64', mode = 'r+', shape = (10000, 3, 3, 128, 128)) for i in range(2)]
 # x_test_np = np.concatenate(x_test_np, axis = 0)
 # x_test_np = x_test_np[:,:1,...]
 # x_test_np = np.squeeze(x_test_np)
 # print(x_test_np.shape)
-os.mkdir('/storage/climate-memmap/models/ResNet34/cluster_models')
-test_embeds = np.memmap('/storage/climate-memmap/models/ResNet34/test_embeddings_8100.memmap', dtype = 'float32', mode = 'r+', shape = (20000, 100))
+# os.mkdir('/storage/climate-memmap/models/ResNet34/cluster_models')
+test_embeds = np.memmap('/storage/climate-memmap/models/ResNet34/test_embeddings_100.memmap', dtype = 'float32', mode = 'r+', shape = (20000, 100))
 for i in range(4,15):
-    cluster_labels = cluster_t2v(test_embeds,
-                                 n_clusters = i,
-                                 is_plot=True, n_egs=10,
-                                 savePathVis='/storage/climate-memmap/models/ResNet34/clusters/t2v_cluster_egs_'+str(i)+'.pdf',rgb=False)
+    cluster_t2v(test_embeds,
+                n_clusters = i,
+                is_plot=True, n_egs=10,
+                savePathVis='/storage/climate-memmap/models/ResNet34/clusters/t2v_cluster_egs_'+str(i)+'.pdf',rgb=False)

@@ -7,3 +7,4 @@ test_clean:v32 batch-size 8 (val) with 10 file 10 epochs margin 0.1
 embeddings_test:v11 clusters 4-15 clusters with ResNet18 with embeddings 8192
 test_clean:v44 batch-size 8 (val) with 10 file 10 epochs margin 1.0, embeddings:v15, embeddings_test:v12 ResNet18
 lightning:v45 batch-size 32 (val) with 10 file 20 epochs margin 1.0, ResNet34
+test_clean:v47 batch-size 32 (val) with 10 files 50 epochs margin 1.0 ResNet34
