@@ -13,19 +13,19 @@ def cluster_t2v(test_embeds, n_clusters, is_plot=False, n_egs=10, savePathVis=No
     # cluster_model = AgglomerativeClustering(n_clusters=n_clusters, metric='euclidean', compute_full_tree='auto', linkage='ward')
     # cluster_out = cluster_model.fit(test_embeds) # X is array-like, shape (n_samples, n_features) 
     # cluster_labels = cluster_out.labels_ # cluster labels directly
-    # joblib.dump(cluster_model, '/storage/climate-memmap/models/ResNet34/cluster_models/agglomerative_clustering_model_n-clusters_'+str(n_clusters)+'.joblib')
+    # joblib.dump(cluster_model, '/storage/climate-memmap/models/ResNet34/embedding_50/agglomerative_clustering_model_n-clusters_'+str(n_clusters)+'.joblib')
 
     # try kmeans clustering
-    if not os.path.exists('/storage/climate-memmap/models/ResNet34/cluster_models/kmeans'):
-        os.mkdir('/storage/climate-memmap/models/ResNet34/cluster_models/kmeans')
+    if not os.path.exists('/storage/climate-memmap/models/ResNet34/embedding_50/kmeans'):
+        os.mkdir('/storage/climate-memmap/models/ResNet34/embedding_50/kmeans')
     cluster_model = KMeans(n_clusters=n_clusters, random_state=0).fit(test_embeds)
-    joblib.dump(cluster_model, '/storage/climate-memmap/models/ResNet34/cluster_models/kmeans/kmeans_clustering_model_n-clusters_'+str(n_clusters)+'.joblib')
+    joblib.dump(cluster_model, '/storage/climate-memmap/models/ResNet34/embedding_50/kmeans/kmeans_clustering_model_n-clusters_'+str(n_clusters)+'.joblib')
 
     # try gaussian mixture model clustering
-    if not os.path.exists('/storage/climate-memmap/models/ResNet34/cluster_models/gaussian_mixture'):
-        os.mkdir('/storage/climate-memmap/models/ResNet34/cluster_models/gaussian_mixture')
+    if not os.path.exists('/storage/climate-memmap/models/ResNet34/embedding_50/gaussian_mixture'):
+        os.mkdir('/storage/climate-memmap/models/ResNet34/embedding_50/gaussian_mixture')
     cluster_model = GaussianMixture(n_components=n_clusters, random_state=0).fit(test_embeds)
-    joblib.dump(cluster_model, '/storage/climate-memmap/models/ResNet34/cluster_models/gaussian_mixture/gaussian_mixture_model_n-clusters_'+str(n_clusters)+'.joblib')
+    joblib.dump(cluster_model, '/storage/climate-memmap/models/ResNet34/embedding_50/gaussian_mixture/gaussian_mixture_model_n-clusters_'+str(n_clusters)+'.joblib')
     
 
     # find n examples of each cluster
@@ -71,9 +71,9 @@ def cluster_t2v(test_embeds, n_clusters, is_plot=False, n_egs=10, savePathVis=No
 # x_test_np = x_test_np[:,:1,...]
 # x_test_np = np.squeeze(x_test_np)
 # print(x_test_np.shape)
-# os.mkdir('/storage/climate-memmap/models/ResNet34/cluster_models')
-test_embeds = np.memmap('/storage/climate-memmap/models/ResNet34/test_embeddings_100.memmap', dtype = 'float32', mode = 'r+', shape = (20000, 100))
-for i in range(4,15):
+# os.mkdir('/storage/climate-memmap/models/ResNet34/embedding_50')
+test_embeds = np.memmap('/storage/climate-memmap/models/ResNet34/embedding_50/test_embeddings_50.memmap', dtype = 'float32', mode = 'r+', shape = (20000, 50))
+for i in range(4,25):
     cluster_t2v(test_embeds,
                 n_clusters = i,
                 is_plot=True, n_egs=10,

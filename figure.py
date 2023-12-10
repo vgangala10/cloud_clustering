@@ -5,7 +5,7 @@ from sklearn.mixture import GaussianMixture
 import joblib
 import os
 def cluster_t2v(n_clusters, is_plot=False, n_egs=10, savePathVis=None, rgb=True):
-    cluster_model = joblib.load('/storage/climate-memmap/models/ResNet34/cluster_models/kmeans/kmeans_clustering_model_n-clusters_'+str(n_clusters)+'.joblib')
+    cluster_model = joblib.load('/storage/climate-memmap/models/ResNet34/embedding_50/kmeans/kmeans_clustering_model_n-clusters_'+str(n_clusters)+'.joblib')
     cluster_labels = cluster_model.labels_ # cluster labels directly
     cluster_egs=[]
     for i in range(n_clusters):
@@ -40,7 +40,7 @@ x_test_np = x_test_np[:,:1,...]
 x_test_np = np.squeeze(x_test_np)
 print(x_test_np.shape)
 # os.mkdir('/storage/climate-memmap/models/ResNet34/cluster_models')
-for i in range(4,15):
+for i in range(4,25):
     cluster_t2v(n_clusters = i,
                 is_plot=True, n_egs=10,
-                savePathVis='/storage/climate-memmap/models/ResNet34/cluster_models/kmeans/t2v_cluster_egs_'+str(i)+'.pdf',rgb=False)
+                savePathVis='/storage/climate-memmap/models/ResNet34/embedding_50/kmeans/t2v_cluster_egs_'+str(i)+'.pdf',rgb=False)

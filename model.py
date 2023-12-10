@@ -30,7 +30,7 @@ class ResidualBlock(pl.LightningModule):
         out = F.relu(out)
         return out
 class TripletLightningModule(pl.LightningModule):
-    def __init__(self, num_blocks, in_channels=3, z_dim=512, lr=0.001, batch_size=8):
+    def __init__(self, num_blocks, in_channels=3, z_dim=512, lr=0.001, batch_size=8, n_dims = 100):
         super(TripletLightningModule, self).__init__()
         self.save_hyperparameters()
         self.in_channels = in_channels
@@ -47,7 +47,7 @@ class TripletLightningModule(pl.LightningModule):
         self.layer4 = self._make_layer(512, num_blocks[3], stride=2)
         # self.layer5 = self._make_layer(self.z_dim, num_blocks[4], stride=2)
         self.avg_pool = nn.AdaptiveAvgPool2d((1, 1))
-        self.embedding_layer = nn.Linear(512, 100)
+        self.embedding_layer = nn.Linear(512, n_dims)
 
     def _make_layer(self, planes, num_blocks, stride, no_relu=False):
         strides = [stride] + [1]*(num_blocks-1)

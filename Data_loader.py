@@ -53,7 +53,26 @@ class Triplet_one(Dataset):
         patch = torch.from_numpy(patch)
         return patch
     def __len__(self):
-        return self.length  
+        return self.length
+
+class Triplet_concat_one(Dataset):
+    def __init__(self, concat_dataset):
+        self.concat_dataset = concat_dataset
+        self.dataset_lengths = [len(dataset) for dataset in concat_dataset.datasets]
+        self.cumulative_lengths = [0] + list(np.cumsum(self.dataset_lengths))
+    def __getitem__(self, index):
+        for i, length in enumerate(self.cumulative_lengths[:-1]):
+            if index >= length and index < self.cumulative_lengths[i + 1]:
+                dataset_index = i
+                dataset_specific_index = index - length
+        specific_dataset = self.concat_dataset.datasets[dataset_index]
+        patch = specific_dataset[dataset_specific_index]
+        patch = patch.squeeze()
+        patch = patch.astype(np.float32)
+        patch = torch.from_numpy(patch)
+        return patch
+    def __len__(self):
+        return sum(self.dataset_lengths)  
 
 class Triplet(pl.LightningDataModule):
     def __init__(self, batch_size, num_workers, num_files = 2):
@@ -66,7 +85,7 @@ class Triplet(pl.LightningDataModule):
         memmaps = [np.memmap('/storage/climate-memmap/triplet_data/orig_memmap'+str(i)+'.memmap', dtype = 'float64', mode = 'r+', shape = (10000, 3, 3, 128, 128)) for i in range(self.num_files)]
         data_ALL = ConcatDataset(memmaps)
         self.data = TripletConcatDataset(data_ALL) 
-        memmap_val = np.memmap('/storage/climate-memmap/triplet_data/orig_memmap11.memmap', dtype = 'float64', mode = 'r+', shape = (10000, 3, 3, 128, 128))
+        memmap_val = np.memmap('/storage/climate-memmap/triplet_data/orig_memmap25.memmap', dtype = 'float64', mode = 'r+', shape = (10000, 3, 3, 128, 128))
         self.val_data = triplet_val(memmap_val)
 
     def train_dataloader(self):
