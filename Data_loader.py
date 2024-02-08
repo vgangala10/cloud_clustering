@@ -82,10 +82,10 @@ class Triplet(pl.LightningDataModule):
         self.num_files = num_files
 
     def setup(self, stage):
-        memmaps = [np.memmap('/storage/climate-memmap/triplet_data/orig_memmap'+str(i)+'.memmap', dtype = 'float64', mode = 'r+', shape = (10000, 3, 3, 128, 128)) for i in range(self.num_files)]
+        memmaps = [np.memmap('/storage/climate-memmap/triplet_data/orig_memmap'+str(i)+'.memmap', dtype = 'float64', mode = 'r+', shape = (10000, 3, 3, 128, 128)) for i in range(30, 30+self.num_files)]
         data_ALL = ConcatDataset(memmaps)
         self.data = TripletConcatDataset(data_ALL) 
-        memmap_val = np.memmap('/storage/climate-memmap/triplet_data/orig_memmap25.memmap', dtype = 'float64', mode = 'r+', shape = (10000, 3, 3, 128, 128))
+        memmap_val = np.memmap('/storage/climate-memmap/triplet_data/orig_memmap99.memmap', dtype = 'float64', mode = 'r+', shape = (10000, 3, 3, 128, 128))
         self.val_data = triplet_val(memmap_val)
 
     def train_dataloader(self):

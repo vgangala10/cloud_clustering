@@ -7,9 +7,16 @@ from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.profilers import PyTorchProfiler
 from pytorch_lightning.strategies import DeepSpeedStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint
+import os
 from model import *
 from Data_loader import *
-path_model = '/storage/climate-memmap/models/ResNet34/embedding_75'
+from config import train
+
+path_model = train['model_directory']
+
+if not os.path.exists(path_model):
+    os.mkdir(path_model)
+
 if __name__ == '__main__':
     logger = TensorBoardLogger("tb_logs", name="mnist_model_v1")
     torch.set_float32_matmul_precision('medium')
@@ -18,12 +25,12 @@ if __name__ == '__main__':
         on_trace_ready=torch.profiler.tensorboard_trace_handler(path_model+"/tb_logs/profiler0"),
         schedule=torch.profiler.schedule(skip_first=10, wait=1, warmup=1, active=20),
     )
-    model = TripletLightningModule(num_blocks=[3, 4, 6, 3], in_channels=3, z_dim=512, lr=0.001, batch_size=16, n_dims=75)
+    model = TripletLightningModule(num_blocks=[3, 4, 6, 3], in_channels=3, z_dim=512, lr=train['learning_rate'], batch_size=train['batch_size'], n_dims=train['embedding_size'])
     world_size = torch.cuda.device_count()
     dm = Triplet(
-        batch_size=32,
-        num_workers=4,
-        num_files = 20
+        batch_size= train['batch_size'],
+        num_workers= train['number_of_workers'],
+        num_files = train['training_files']
     )
     checkpoint_callback = ModelCheckpoint(
     save_top_k=1,
@@ -36,7 +43,7 @@ if __name__ == '__main__':
                         devices = list(range(world_size)), 
                         max_epochs=50,
                         profiler = profiler,
-                        strategy=DeepSpeedStrategy(logging_batch_size_per_gpu=32),
+                        strategy=DeepSpeedStrategy(logging_batch_size_per_gpu=train['batch_size']),
                         log_every_n_steps = 100,
                         default_root_dir=path_model,
                         callbacks = [checkpoint_callback])  # Set gpus to the number of GPUs

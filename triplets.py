@@ -20,24 +20,24 @@ similar_day = r.choice(day_31)
 
 
 def sample_new2(array, distant, array_path, distant_path):
-    shape_sim = np.shape(array.data)
-    shape_dist = np.shape(distant.data)
+    shape_sim = np.shape(array)
+    shape_dist = np.shape(distant)
     coords = []
     a = np.empty((3, 3, 128, 128))
     x = r.randint(256, shape_sim[2]-256) # To get the random x coordinate 256 pixels away from the boundary
     y = r.randint(256, shape_sim[1]-256) # To get the random y coordinate 256 pixels away from the boundary
     # similar_1 = sliced(array, coords(x,y))
-    similar_1= array.data.isel(x=slice(x, x+128), y=slice(y, y+128)) # To get the slice of the array
+    similar_1= array.isel(x=slice(x, x+128), y=slice(y, y+128)) # To get the slice of the array
     nearest = similar_1.isel(x=56, y=56) # To get the middle pixel
     lat, long = nearest.coords['latitude'].data, nearest.coords['longitude'].data # To get the coordinates of the middle pixel
     coords.append([float(lat), float(long), array_path]) 
 
     # for neighboring crop
     random_angle_rad = r.uniform(0, 2*m.pi) # To get the random angle
-    radius = r.randint(56, 128) # To get the radius of the circle
+    radius = r.randint(64, 128) # To get the radius of the circle
     x_near = x + int(radius * m.cos(random_angle_rad)) # To get the x coordinate of the neighboring pixel
     y_near = y + int(radius * m.sin(random_angle_rad)) # To get the y coordinate of the neighboring pixel
-    similar_2 = array.data.isel(x=slice(x_near, x_near+128), y=slice(y_near, y_near+128))
+    similar_2 = array.isel(x=slice(x_near, x_near+128), y=slice(y_near, y_near+128))
     nearest = similar_2.isel(x=56, y=56) # To get the nearest pixel
     lat, long = nearest.coords['latitude'].data, nearest.coords['longitude'].data # To get the latitude pf nearest pixel
     coords.append([float(lat), float(long), array_path])
@@ -46,7 +46,7 @@ def sample_new2(array, distant, array_path, distant_path):
     # for distant image
     x_dist = r.randint(256, shape_dist[2]-256)
     y_dist = r.randint(256, shape_dist[1]-256)
-    distant_1 = distant.data.isel(x=slice(x_dist, x_dist+128), y=slice(y_dist, y_dist+128))
+    distant_1 = distant.isel(x=slice(x_dist, x_dist+128), y=slice(y_dist, y_dist+128))
     nearest = distant_1.isel(x=56, y=56) # To get the nearest pixel
     lat, long = nearest.coords['latitude'].data, nearest.coords['longitude'].data # To get the latitude pf nearest pixel
     coords.append([float(lat), float(long), distant_path])
@@ -80,7 +80,16 @@ def triplet(path):
             distant, dist_path = array(path)
         except:
             continue
-        if np.shape(similar.data)[1]!=2030 or np.shape(distant.data)[1]!= 2030:
+        similar = similar.data
+        distant = distant.data
+        if np.shape(similar)[1]!=2030 or np.shape(distant)[1]!= 2030:
+            if np.shape(similar)[1]==2040:
+                similar= similar.isel(x=slice(0, 2030))
+            else:
+                continue
+            if np.shape(distant)[1]==2040:
+                distant= distant.isel(x=slice(0, 2030))
+            else:
                 continue 
         a, coords = sample_new2(similar, distant, sim_path, dist_path)
         if np.any(np.isnan(a)):
@@ -120,9 +129,9 @@ def generate_triplet(j):
 start = time.time()
 if __name__ == "__main__":
     print(start)
-    num_processes = 70  # Number of processes to use
+    num_processes = 30  # Number of processes to use
     pool = multiprocessing.Pool(processes=num_processes)
 
-    results = pool.map(generate_triplet, range(30, num_processes+30))
+    results = pool.map(generate_triplet, range(num_processes))
 
 print(time.time()-start)

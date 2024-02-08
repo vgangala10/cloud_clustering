@@ -4,6 +4,7 @@ import pytorch_lightning as pl
 import torch.nn.functional as F
 import torch
 import torch.nn as nn
+import numpy as np
 
 class ResidualBlock(pl.LightningModule):
     def __init__(self, in_planes, planes, stride=1):
@@ -56,6 +57,20 @@ class TripletLightningModule(pl.LightningModule):
             layers.append(ResidualBlock(self.in_planes, planes, stride=stride))
             self.in_planes = planes
         return nn.Sequential(*layers)
+    def transform_data(self, data_in):
+    # applies some random flips and rotations to the data
+        rand_i = np.random.choice([0, 1, 2, 3, 4])
+        if rand_i in [1, 3]:
+            # rotate 90 degrees
+            data_in = data_in.rot90(rand_i, [2, 3])
+        elif rand_i == 2:
+            # vert mirror
+            data_in = data_in.flip(2)
+        elif rand_i == 4:
+            # horiz mirror
+            data_in = data_in.flip(3)
+        # else do nothing, use orig image
+        return data_in
 
     def encode(self, x):
         # a forward pass
@@ -87,7 +102,7 @@ class TripletLightningModule(pl.LightningModule):
         return loss, l_n, l_d, l_nd
 
     def loss(self, patch, neighbor, distant, margin=1.0, l2=0):
-        z_p, z_n, z_d = self.forward(patch), self.forward(neighbor), self.forward(distant)
+        z_p, z_n, z_d = self.forward(self.transform_data(patch)), self.forward(self.transform_data(neighbor)), self.forward(self.transform_data(distant))
         return self.triplet_loss(z_p, z_n, z_d, margin=margin, l2=l2)
 
     def training_step(self, batch, batch_idx):
