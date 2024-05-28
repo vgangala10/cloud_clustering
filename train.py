@@ -14,8 +14,7 @@ from config import train
 
 path_model = train['model_directory']
 
-if not os.path.exists(path_model):
-    os.mkdir(path_model)
+os.makedirs(path_model, exist_ok = True)
 
 if __name__ == '__main__':
     logger = TensorBoardLogger("tb_logs", name="mnist_model_v1")
@@ -25,13 +24,25 @@ if __name__ == '__main__':
         on_trace_ready=torch.profiler.tensorboard_trace_handler(path_model+"/tb_logs/profiler0"),
         schedule=torch.profiler.schedule(skip_first=10, wait=1, warmup=1, active=20),
     )
-    model = TripletLightningModule(num_blocks=[3, 4, 6, 3], in_channels=3, z_dim=512, lr=train['learning_rate'], batch_size=train['batch_size'], n_dims=train['embedding_size'])
+    # model = TripletLightningModule(num_blocks=[3, 4, 6, 3], in_channels=3, z_dim=512, lr=train['learning_rate'], batch_size=train['batch_size'], n_dims=train['embedding_size'])
+
+    model = VAELightningModule(lr = train['learning_rate'])
+
     world_size = torch.cuda.device_count()
-    dm = Triplet(
-        batch_size= train['batch_size'],
-        num_workers= train['number_of_workers'],
+
+    # # Triplet data for Resnet34
+    # dm = Triplet(
+    #     batch_size= train['batch_size'],
+    #     num_workers= train['number_of_workers'],
+    #     num_files = train['training_files'],
+    #     json_file='./land_data.json'
+    # )
+    dm = VAEdata(
+        batch_size = train['batch_size'],
+        num_workers = train['number_of_workers'],
         num_files = train['training_files']
     )
+
     checkpoint_callback = ModelCheckpoint(
     save_top_k=1,
     monitor="Validation_epoch_loss",
@@ -41,7 +52,7 @@ if __name__ == '__main__':
 )
     trainer = pl.Trainer(accelerator = "gpu",
                         devices = list(range(world_size)), 
-                        max_epochs=50,
+                        max_epochs=train['epochs'],
                         profiler = profiler,
                         strategy=DeepSpeedStrategy(logging_batch_size_per_gpu=train['batch_size']),
                         log_every_n_steps = 100,

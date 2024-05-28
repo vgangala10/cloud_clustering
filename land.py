@@ -4,6 +4,30 @@ from global_land_mask import globe
 import numpy as np
 from config import clustering
 
+'''
+stores number of data points in each cluster are on land or off land for each k value
+ex:
+
+if we have only two k values 4,5. Then the json file for on land will be of the following format:
+{'4': 
+    {
+        0: 814,
+        1: 1257,
+        2: 897,
+        3: 149,
+    }
+ '5':
+    {
+        0: 942,
+        1: 487,
+        2: 804,
+        3: 149,
+        4: 735,
+    }
+}
+similarly for the off land json file.
+'''
+
 with open(clustering['kmeans_path']+'/kmeans_labels_95.json', 'r') as file:
     labels_data = json.load(file)
 with open('/storage/climate-memmap/train_coordinates_data/coordinates_data_95.json', 'r') as file:

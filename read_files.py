@@ -33,13 +33,24 @@ for i in range(len(labels)):
         else:
             embedds_one.extend(embeddings)
     del memmap
-    for i in nan:
-        if np.isnan(i).sum()>0:
+    for j in nan:
+        if np.isnan(j).sum()>0:
+            print(j, labels[i])
             continue
         else:
-            embedds_one.append(i)
+            embedds_one.append(j)
     embedds_one = np.array(embedds_one)
+    embedd_memmap = np.memmap('/storage/climate-memmap/classified_cloud_images_modified/'+labels[i]+'/embedd_memmap_'+ str(embedding['embedding_size'])+'_.memmap', 
+                              dtype = 'float64', 
+                              mode = 'w+', 
+                              shape = (len(embedds_one), embedding['embedding_size']))
+    print(embedd_memmap.shape, labels[i])
+    embedd_memmap[:] = embedds_one[:]
+    embedd_memmap.flush()
     embedds_all.append(embedds_one)
+    del embedd_memmap
+
+
 d = {}
 for j in tqdm(range(4,25)):
     # Get a list of all folders in the specified directory
@@ -48,7 +59,7 @@ for j in tqdm(range(4,25)):
     for i in range(len(labels)):
         cluster_labels.append(model.predict(embedds_all[i]).tolist())
     d[str(j)] = cluster_labels
-with open(clustering['kmeans_path']+'/embedding_'+embedding['embedding_size']+'_classified_clustering.json', 'w') as file:
+with open(clustering['kmeans_path']+'/embedding_'+str(embedding['embedding_size'])+'_classified_clustering.json', 'w') as file:
     json.dump(d, file)
     
 

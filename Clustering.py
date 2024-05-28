@@ -6,6 +6,10 @@ import joblib
 import os
 from config import clustering, embedding
 
+'''
+Fits kmeans and gaussian mixture models for 21 K values and stores all the models.
+'''
+
 def cluster_t2v(test_embeds, n_clusters):
 
     if not os.path.exists(clustering['kmeans_path']):

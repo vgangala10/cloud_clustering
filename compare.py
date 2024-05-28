@@ -7,6 +7,9 @@ from datetime import datetime, timedelta
 import glob
 import matplotlib.pyplot as plt
 import json
+'''T'''
+
+
 def array(all_paths):
     path = "/storage/my-sdsc-storage/nrp/protected/sio/MODIS_Aqua_microphysics_images/2010"
     start_date = datetime(2010, 1, 1)

@@ -4,6 +4,11 @@ import json
 import os
 from config import clustering
 
+'''
+It gives the images of the clusters corresponding to the clusters formed and saves the image in a pdf file.
+'''
+
+
 with open(clustering['kmeans_path']+'/kmeans_labels_95.json', 'r') as file:
     d = json.load(file)
 

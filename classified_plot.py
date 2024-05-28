@@ -2,7 +2,7 @@ import json
 import matplotlib.pyplot as plt
 from collections import Counter
 
-path = '/storage/climate-memmap/models/ResNet34/embedding_50_transform_files_60/kmeans/embedding_50_classified_clustering.json'
+path = '/Users/harshagangala/Downloads/embedding_50_classified_clustering.json'
 with open(path, 'r') as file:
     cluster_classified = json.load(file)
 def classified_plot(n_cluster, cluster_classified):
@@ -30,5 +30,7 @@ def classified_plot(n_cluster, cluster_classified):
     plt.tight_layout()
 
     plt.show()
+
+classified_plot(n_cluster=15, cluster_classified= cluster_classified)
     
     

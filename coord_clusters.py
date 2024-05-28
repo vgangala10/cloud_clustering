@@ -8,6 +8,9 @@ import matplotlib.pyplot as plt
 import json
 from config import clustering, embedding
 from tqdm import tqdm
+'''
+Store embeddings of test data
+'''
 # num_files = 2
 memmap = np.memmap('/storage/climate-memmap/triplet_data/orig_memmap95.memmap', dtype = 'float64', mode = 'r+', shape = (10000, 3, 3, 128, 128))
 # memmap_test = np.memmap('/storage/climate-memmap/models/ResNet34/embedding_50/test_embeddings_50_coords.memmap', dtype = 'float32', mode = 'r+', shape = (20000, 50))
