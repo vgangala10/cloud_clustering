@@ -1,5 +1,5 @@
 from torch.utils.data import DataLoader, Dataset, ConcatDataset
-from model import *
+from Final_code.ResNet import *
 from Data_loader import *
 import joblib
 import numpy as np
@@ -35,18 +35,18 @@ mem_embedd[:] = data_embedd[:]
 mem_embedd.flush()
 
 
-# d = {}
-# for n_clusters in range(4,25):
-#     # labels_cluster = []
-#     model_path = clustering['kmeans_path']+'/kmeans_clustering_model_n-clusters_'+str(n_clusters)+'.joblib'
-#     cluster_model = joblib.load(model_path)
-#     # for _, data in enumerate(data_loader, 0):
-#     #     data_model = model.encode(data[0])
-#     #     data_model = data_model.detach().numpy()
-#     #     labels_batch = cluster_model.predict(data_model)
-#     #     labels_cluster.extend(labels_batch.tolist())
-#     labels_cluster = cluster_model.predict(data)
-#     d[n_clusters] = labels_cluster
-# json_path = clustering['kmeans_path']+'/kmeans_labels_95.json'
-# with open(json_path, 'w') as file:
-#     json.dump(d, file)
+d = {}
+for n_clusters in range(4,25):
+    # labels_cluster = []
+    model_path = clustering['kmeans_path']+'/kmeans_clustering_model_n-clusters_'+str(n_clusters)+'.joblib'
+    cluster_model = joblib.load(model_path)
+    for _, data in enumerate(data_loader, 0):
+        data_model = model.encode(data[0])
+        data_model = data_model.detach().numpy()
+        labels_batch = cluster_model.predict(data_model)
+        labels_cluster.extend(labels_batch.tolist())
+    labels_cluster = cluster_model.predict(data)
+    d[n_clusters] = labels_cluster
+json_path = clustering['kmeans_path']+'/kmeans_labels_95.json'
+with open(json_path, 'w') as file:
+    json.dump(d, file)

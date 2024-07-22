@@ -1,10 +1,10 @@
 train = {
-    'model_directory': '/storage/climate-memmap/models/VAE/orig_model',
+    'model_directory': '/storage/climate-memmap/models/AE/orig_model_ls_50',
     'batch_size': 128,
-    'number_of_workers': 4,
+    'number_of_workers': 8,
     'training_files': 90,
-    'embedding_size': 50,
-    'learning_rate': 1e-5,
+    'embedding_size': 100,
+    'learning_rate': 1e-4,
     'epochs': 50
 }
 

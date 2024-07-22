@@ -94,7 +94,7 @@ class TripletLightningModule(pl.LightningModule):
         l_d = - torch.sqrt(((z_p - z_d) ** 2).sum(dim=1))
         l_nd = l_n + l_d
         loss = F.relu(l_n + l_d + margin)
-        l_n = torch.mean(l_n) # does this average over batch?
+        l_n = torch.mean(l_n)
         l_d = torch.mean(l_d)
         l_nd = torch.mean(l_n + l_d)
         loss = torch.mean(loss)
@@ -155,7 +155,7 @@ class ConvBlock2dT(pl.LightningModule):
         in_channels = out_channels
         for _ in range(num_convs-1):
             layers.append(nn.ConvTranspose2d(in_channels, out_channels, kernel_size=3, stride=1, padding = 1))
-            layers.append(nn.LeakyReLU(inplace=True))
+            layers.append(nn.Lea(inplace=True))
             in_channels = out_channels
         self.block = nn.Sequential(*layers)
 
@@ -163,7 +163,7 @@ class ConvBlock2dT(pl.LightningModule):
         return self.block(x)
 
 class VAELightningModule(pl.LightningModule):
-    def __init__(self, latent_dim = 50, lr = 1e-5):
+    def __init__(self, latent_dim = 100, lr = 1e-5):
         super(VAELightningModule, self).__init__()
         self.save_hyperparameters()
         self.losses = 0
@@ -191,6 +191,7 @@ class VAELightningModule(pl.LightningModule):
         self.blockde2 = ConvBlock2dT(64, 32, 3)
         self.blockde1 = ConvBlock2dT(32, 3, 3)
         # self.decoder = Decoder(latent_dim)
+        self.tanh = nn.Tanh()
 
     def reparameterize(self, mean, log_var):
         std = torch.exp(0.5 * log_var)
@@ -217,6 +218,7 @@ class VAELightningModule(pl.LightningModule):
         x = self.blockde3(x)
         x = self.blockde2(x)
         x = self.blockde1(x)
+        x = self.tanh(x)
         return x
     
     def transform_data(self, data_in):

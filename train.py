@@ -8,7 +8,7 @@ from pytorch_lightning.profilers import PyTorchProfiler
 from pytorch_lightning.strategies import DeepSpeedStrategy
 from pytorch_lightning.callbacks import ModelCheckpoint
 import os
-from model import *
+from models.autoencoder import *
 from Data_loader import *
 from config import train
 
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     )
     # model = TripletLightningModule(num_blocks=[3, 4, 6, 3], in_channels=3, z_dim=512, lr=train['learning_rate'], batch_size=train['batch_size'], n_dims=train['embedding_size'])
 
-    model = VAELightningModule(lr = train['learning_rate'])
+    model = AELightningModule(lr = train['learning_rate'])
 
     world_size = torch.cuda.device_count()
 

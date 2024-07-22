@@ -1,4 +1,4 @@
-from model import *
+from Final_code.ResNet import *
 import torch
 from torch import optim
 import pytorch_lightning as pl

@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from model import *
+from Final_code.ResNet import *
 import torch
 from torch.utils.data import DataLoader
 from Data_loader import *

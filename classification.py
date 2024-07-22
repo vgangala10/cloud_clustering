@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint
 from pytorch_lightning.loggers import TensorBoardLogger
-from model import *
+from Final_code.ResNet import *
 from config import embedding
 import torchmetrics
 import torchvision.models as models

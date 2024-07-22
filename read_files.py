@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import joblib
 import os
-from model import *
+from Final_code.ResNet import *
 import json
 from Data_loader import *
 from torch.utils.data import DataLoader, Dataset, ConcatDataset
